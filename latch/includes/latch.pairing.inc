@@ -81,8 +81,10 @@ function unpairingform_submit($form, $form_state) {
 function pairAccount($token, $uid) {
 	$appSecret = variable_get('latch_secret', '');
 	$appId = variable_get('latch_appid', '');
+        $query = db_query("SELECT * FROM {latch} WHERE uid=".$uid);
+        $userLatchData = db_fetch_object($query);  // Check this to avoid pairing a user twice
 
-	if (!empty($appId) && !empty($appSecret)) {
+	if (!empty($appId) && !empty($appSecret) && !$userLatchData) {
 		$api = new Latch($appId, $appSecret);
 
 		$pairResponse = $api->pair($token);
