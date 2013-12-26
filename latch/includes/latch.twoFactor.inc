@@ -1,0 +1,81 @@
+<?php 
+/*
+Latch Drupal 6 plugin - Integrates Latch into the Drupal 6 authentication process.
+Copyright (C) 2013 Eleven Paths
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+/*
+ * Generates the structure for the second factor form.
+ */
+function latchTwoFactorForm() {
+    $form = array(
+        '#id' => 'user_login_block'
+    );
+    $form['twoFactor'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Type your one-time password'),
+        '#size' => 20
+    );
+    $form['name'] = array(
+        '#type' => 'hidden',
+        '#value' => $_POST['name'] // It's automatically encoded by the form builder
+    );
+    $form['pass'] = array(
+        '#type' => 'hidden',
+        '#value' => $_POST['pass'] // It's automatically encoded by the form builder
+    );
+    $form['#validate'] = user_login_default_validators();
+    $form['submit'] = array('#type' => 'submit', '#value' => t('Log in'), '#weight' => 2);
+
+    return $form;
+}
+
+/*
+ * Inserts the rendered second factor form into an HTML document.
+ */
+function buildHTML($htmlForm) {
+    return '<html><head>'
+            . '<style>'
+            . '.twoFactorContainer { display:block; width:300px; margin: 5% auto 0 auto; text-align: center; padding: 5px; border: solid 1px black; border-radius:5px}'
+            . '</style>'
+            . '</head><body><div class="twoFactorContainer">'
+            . $htmlForm
+            . '</div></body></html>';
+}
+
+/*
+ * Points the second factor form to the login action
+ */
+function latch_form_alter(&$form, $form_state, $form_id) {
+    if ($form_id == "latchTwoFactorForm") {
+        $form['form_id']['#value'] = 'user_login_block';
+    }
+}
+
+function storeSecondFactor($otp, $uid) {
+    db_query("UPDATE {latch} SET two_factor='%s' WHERE uid=%d", $otp, $uid);
+}
+
+function retrieveSecondFactor($uid) {
+    $query = db_query("SELECT * FROM {latch} WHERE uid=%d", $uid);
+    $userLatchData = db_fetch_object($query);
+    return ($userLatchData) ? $userLatchData->two_factor : NULL;
+}
+
+function removeSecondFactor($uid) {
+    db_query("UPDATE {latch} set two_factor='%s' WHERE uid=%d", NULL, $uid);
+}
