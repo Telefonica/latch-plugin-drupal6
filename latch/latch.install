@@ -20,8 +20,6 @@
  */
 
 function latch_install() {
-
-
     variable_set('latch_secret', '');
     variable_set('latch_appid', '');
 
@@ -29,7 +27,6 @@ function latch_install() {
 }
 
 function latch_uninstall() {
-
     variable_del('latch_secret');
     variable_del('latch_appid');
 
@@ -70,7 +67,6 @@ function latch_schema() {
         ),
         'primary key' => array('uid'),
     );
-
 
     return $schema;
 }
