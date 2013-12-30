@@ -48,11 +48,20 @@ function latchTwoFactorForm() {
  * Inserts the rendered second factor form into an HTML document.
  */
 function buildHTML($htmlForm) {
+    global $base_url;
     return '<html><head>'
             . '<style>'
-            . '.twoFactorContainer { display:block; width:300px; margin: 5% auto 0 auto; text-align: center; padding: 5px; border: solid 1px black; border-radius:5px}'
+            . '.twoFactorContainer { display:block; width:300px; margin: 5% auto 0 auto; text-align: center; border: solid 1px rgb(184, 184, 184); border-radius:5px}'
+            . '.twoFactorHeader {float:left; background: #00b9be; color: #FFF; width:100%; border-top-left-radius: 5px; border-top-right-radius: 5px; font-family: sans-serif;}'
+            . '.twoFactorHeader h3 {float: left; margin-left: 10px;}'
+            . '.twoFactorHeader img {width: 45px; height: auto; float:left; margin-top: 5px; margin-left:20px}'
+            . '.twoFactorForm {clear:left; padding-top:10px;}'
+            . 'input {margin-top:10px}'
+            . 'input[type="submit"] {width:65px;}'
             . '</style>'
-            . '</head><body><div class="twoFactorContainer">'
+            . '</head><body>'
+            . '<div class="twoFactorContainer">'
+            . '<div class="twoFactorHeader"><img src="' . $base_url . '/sites/all/modules/latch/symbol.png"><h3>One-time password</h3></div><div class="twoFactorForm">'
             . $htmlForm
             . '</div></body></html>';
 }
